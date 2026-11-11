@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petualangan Jelajah Nusantara - 38 Provinsi</title>
+    <style>
+        :root {
+            --primary: #1b4332;
+            --accent: #d4a373;
+            --bg-color: #f4f6f8;
+            --card-bg: #ffffff;
+            --success: #2d6a4f;
+            --danger: #bc6c25;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%);
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 650px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 600px;
+        }
+
+        /* Top Header Bar */
+        .top-bar {
+            background: #1b4332;
+            color: #ffb703;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .screen {
+            display: none;
+            padding: 25px;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* Homepage */
+        h1.title {
+            color: #2d6a4f;
+            font-size: 26px;
+            margin: 10px 0 5px 0;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .mascot-box {
+            background: #e9f5ed;
+            border: 2px dashed #2d6a4f;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-align: left;
+            width: 100%;
+        }
+
+        .mascot-avatar {
+            font-size: 45px;
+        }
+
+        .btn-main {
+            background: #d4a373;
+            color: #fff;
+            border: none;
+            padding: 12px 30px;
+            margin: 6px;
+            border-radius: 25px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 80%;
+            transition: 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .btn-main:hover {
+            background: #bc6c25;
+            transform: translateY(-2px);
+        }
+
+        /* Region Select Grid */
+        .region-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            width: 100%;
+            margin: 15px 0;
+        }
+
+        .region-card {
+            background: #f8f9fa;
+            border: 2px solid #cbd5e1;
+            padding: 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+            text-align: left;
+        }
+
+        .region-card:hover {
+            border-color: #2d6a4f;
+            background: #e8f5e9;
+        }
+
+        .region-card h3 {
+            margin: 0 0 5px 0;
+            color: #1b4332;
+            font-size: 16px;
+        }
+
+        .region-card p {
+            margin: 0;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        /* Quiz Area */
+        .quiz-card {
+            background: #f8f9fa;
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 20px;
+            width: 100%;
+        }
+
+        .cultural-badge {
+            background: #ffe8d6;
+            color: #bc6c25;
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .question-text {
+            font-size: 15px;
+            font-weight: bold;
+            color: #1e293b;
+            margin: 15px 0;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .opt-btn {
+            background: white;
+            border: 2px solid #cbd5e1;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: left;
+            transition: 0.2s;
+        }
+
+        .opt-btn:hover { background: #f1f5f9; border-color: #2d6a4f; }
+        .opt-btn.correct { background: #52b788 !important; color: white; border-color: #40916c; }
+        .opt-btn.wrong { background: #e07a5f !important; color: white; border-color: #d64045; }
+
+        .feedback-box {
+            margin-top: 15px;
+            padding: 12px;
+            background: #e2f7ec;
+            border-radius: 8px;
+            color: #1b4332;
+            font-size: 13px;
+            display: none;
+            text-align: left;
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <!-- Top Status Bar -->
+        <div class="top-bar">
+            <div>🏆 Skor: <span id="score-txt">0</span></div>
+            <div>❤️ Nyawa: <span id="lives-txt">3</span></div>
+            <div>📍 Wilayah: <span id="region-txt">-</span></div>
+        </div>
+
+        <!-- 1. HOMEPAGE -->
+        <div id="home-screen" class="screen active">
+            <h1 class="title">🌿 PETUALANGAN NUSANTARA</h1>
+            <div class="subtitle">Mengenal Keberagaman Budaya dari 38 Provinsi Indonesia</div>
+            
+            <div class="mascot-box">
+                <div class="mascot-avatar">🧭👦</div>
+                <div>
+                    <b style="color:#2d6a4f;">Halo, Penjelajah!</b>
+                    <p style="margin:4px 0 0 0; font-size:13px; color:#475569;">Aku Tifa, pemandumu berkeliling Indonesia. Siap menjelajahi budaya Nusantara hari ini?</p>
+                </div>
+            </div>
+
+            <button class="btn-main" onclick="openRegionSelect()">🚀 Mulai Petualangan</button>
+            <button class="btn-main" style="background:#475569;" onclick="openEncyclopedia()">📖 Ensiklopedia Budaya</button>
+        </div>
+
+        <!-- 2. REGION SELECTOR (LEVEL MAP) -->
+        <div id="region-screen" class="screen">
+            <h2 style="color:#1b4332; margin-top:0;">Pilih Wilayah Petualangan</h2>
+            <p style="font-size:13px; color:#666; margin-bottom:15px;">Pilih pulau atau wilayah yang ingin kamu jelajahi:</p>
+            
+            <div class="region-grid" id="region-list">
+                <!-- Generated by JS -->
+            </div>
+            <button class="btn-main" style="background:#64748b; margin-top:10px;" onclick="showScreen('home-screen')">⬅️ Kembali ke Menu</button>
+        </div>
+
+        <!-- 3. QUIZ SCREEN -->
+        <div id="quiz-screen" class="screen">
+            <div class="quiz-card">
+                <span class="cultural-badge" id="category-badge">Pakaian Adat</span>
+                <div class="question-text" id="q-text">Memuat pertanyaan...</div>
+                
+                <div style="font-size:50px; margin:10px 0;" id="q-icon">🏛️</div>
+
+                <div class="options-grid" id="options-box"></div>
+
+                <div class="feedback-box" id="feedback-box"></div>
+
+                <button class="btn-main hidden" id="next-btn" style="width:100%; margin-top:15px;" onclick="nextQuestion()">Lanjut Tantangan ➔</button>
+            </div>
+        </div>
+
+        <!-- 4. ENCYCLOPEDIA SCREEN -->
+        <div id="encyclopedia-screen" class="screen">
+            <h2 style="color:#1b4332; margin-top:0;">📖 Ensiklopedia Budaya Nusantara</h2>
+            <p style="font-size:13px; color:#666; margin-bottom:15px;">Kumpulan informasi budaya dari 38 Provinsi:</p>
+            
+            <div id="encyclopedia-list" style="width:100%; text-align:left; max-height:350px; overflow-y:auto; padding-right:5px;">
+                <!-- Generated by JS -->
+            </div>
+            <button class="btn-main" style="background:#64748b; margin-top:15px;" onclick="showScreen('home-screen')">Kembali</button>
+        </div>
+
+        <!-- 5. RESULT SCREEN -->
+        <div id="result-screen" class="screen">
+            <h1 id="result-header" style="color:#2d6a4f;">🎉 MISI SELESAI!</h1>
+            <p id="result-desc" style="font-size:14px; color:#475569;">Kamu hebat telah menyelesaikan tantangan wilayah ini.</p>
+            
+            <div style="background:#f1f5f9; padding:15px; border-radius:12px; width:100%; margin:15px 0;">
+                <div style="font-size:16px; font-weight:bold; color:#1b4332;">Total Skor: <span id="final-score">0</span></div>
+                <div style="font-size:13px; color:#64748b; margin-top:5px;" id="badge-info">🏅 Lencana: Penjelajah Budaya Madya</div>
+            </div>
+
+            <button class="btn-main" onclick="openRegionSelect()">Pilih Wilayah Lain 🗺️</button>
+            <button class="btn-main" style="background:#475569;" onclick="showScreen('home-screen')">Menu Utama 🏠</button>
+        </div>
+    </div>
+
+    <script>
+        // Database 38 Provinsi Lengkap dengan Kategori Budaya & Penjelasan
+        const dbProvinces = [
+            // SUMATRA
+            { region: "Sumatra", name: "Aceh", category: "Rumah Adat", q: "Apa nama rumah panggung tradisional khas suku Aceh?", icon: "🏠", opts: ["Rumoh Aceh", "Rumah Gadang", "Nuwou Sesat", "Joglo"], ans: 0, exp: "Rumoh Aceh adalah rumah tradisional berarsitektur panggung khas Aceh." },
+            { region: "Sumatra", name: "Sumatera Utara", category: "Pakaian Adat", q: "Kain tenun tradisional kebanggaan masyarakat Batak dinamakan...", icon: "🥋", opts: ["Ulos", "Songket", "Sasirangan", "Batik"], ans: 0, exp: "Kain Ulos melambangkan restu, kasih sayang, dan kehangatan." },
+            { region: "Sumatra", name: "Sumatera Barat", category: "Tarian", q: "Tarian tradisional Minangkabau yang menggunakan piring adalah...", icon: "💃", opts: ["Tari Piring", "Tari Saman", "Tari Tor-Tor", "Tari Pendet"], ans: 0, exp: "Tari Piring melambangkan rasa syukur atas hasil panen melimpah." },
+            { region: "Sumatra", name: "Riau", category: "Pakaian Adat", q: "Busana adat tradisional pria Melayu Riau dikenal sebagai...", icon: "👔", opts: ["Teluk Belanga", "Baju Bodo", "Paksian", "Surjan"], ans: 0, exp: "Baju Teluk Belanga dipadu dengan kain samping songket yang elegan." },
+            { region: "Sumatra", name: "Kepulauan Riau", category: "Tarian", q: "Tari pergaulan tradisional masyarakat Melayu Kepulauan Riau adalah...", icon: "🎶", opts: ["Tari Zapin", "Tari Jaipong", "Tari Serimpi", "Tari Kecak"], ans: 0, exp: "Tari Zapin dipengaruhi unsur budaya Arab dan Melayu." },
+            { region: "Sumatra", name: "Jambi", category: "Situs Sejarah", q: "Kompleks candi Buddha terluas di Sumatra yang terletak di Jambi adalah...", icon: "🏛️", opts: ["Candi Muaro Jambi", "Candi Borobudur", "Candi Prambanan", "Candi Dieng"], ans: 0, exp: "Candi Muaro Jambi merupakan pusat pendidikan agama Buddha masa lampau." },
+            { region: "Sumatra", name: "Sumatera Selatan", category: "Makanan Khas", q: "Kuliner ikonis Palembang berbahan ikan dan sagu dengan kuah cuko adalah...", icon: "🍲", opts: ["Pempek", "Rendang", "Gudeg", "Papeda"], ans: 0, exp: "Pempek disajikan bersama kuah cuko yang bercita rasa asam manis pedas." },
+            { region: "Sumatra", name: "Bangka Belitung", category: "Pakaian Adat", q: "Pakaian adat pengantin tradisional khas Bangka Belitung dinamakan...", icon: "👑", opts: ["Paksian", "Baju Bodo", "Ulee Balang", "King Baba"], ans: 0, exp: "Baju Paksian memadukan unsur kebudayaan Islam dan Tionghoa." },
+            { region: "Sumatra", name: "Bengkulu", category: "Alat Musik", q: "Alat musik tradisional petik berdawai khas Bengkulu dinamakan...", icon: "🎸", opts: ["Doli-Doli", "Sasando", "Kolintang", "Angklung"], ans: 0, exp: "Doli-doli dimainkan dalam berbagai upacara adat masyarakat Bengkulu." },
+            { region: "Sumatra", name: "Lampung", category: "Pakaian Adat", q: "Mahkota emas kebanggaan pengantin wanita Lampung dinamakan...", icon: "👒", opts: ["Siger", "Suntiang", "Cunduk Mentul", "Tanjak"], ans: 0, exp: "Siger melambangkan keagungan, kemuliaan, dan kewibawaan wanita Lampung." },
+
+            // JAWA
+            { region: "Jawa", name: "DKI Jakarta", category: "Makanan Khas", q: "Kuliner tradisional Betawi berbahan ketan panggang dan telur adalah...", icon: "🍳", opts: ["Kerak Telor", "Nasi Uduk", "Ketoprak", "Soto Betawi"], ans: 0, exp: "Kerak Telor dimasak langsung di atas wajan tanpa minyak di atas arang." },
+            { region: "Jawa", name: "Jawa Barat", category: "Alat Musik", q: "Alat musik bambu tradisional dari Jawa Barat yang digoyangkan adalah...", icon: "🎋", opts: ["Angklung", "Gamelan", "Calung", "Rebab"], ans: 0, exp: "Angklung telah diakui UNESCO sebagai Warisan Budaya Takbenda Dunia." },
+            { region: "Jawa", name: "Banten", category: "Kesenian", q: "Seni bela diri dan unjuk kekuatan kekebalan tubuh tradisional Banten adalah...", icon: "⚔️", opts: ["Debus", "Pencak Silat", "Reog", "Kuda Lumping"], ans: 0, exp: "Debus memadukan unsur seni tari, ketangkasan, dan spiritual." },
+            { region: "Jawa", name: "Jawa Tengah", category: "Rumah Adat", q: "Rumah tradisional Jawa Tengah beratap bentuk piramida tajuk disebut...", icon: "🏡", opts: ["Rumah Joglo", "Rumah Gadang", "Rumah Honai", "Rumah Boyang"], ans: 0, exp: "Rumah Joglo memiliki filosofi struktur tata ruang yang sarat makna." },
+            { region: "Jawa", name: "DI Yogyakarta", category: "Kuliner", q: "Makanan khas Yogyakarta berbahan dasar nangka muda berasa manis adalah...", icon: "🍛", opts: ["Gudeg", "Bakpia", "Yangko", "Gatot"], ans: 0, exp: "Gudeg dimasak bersama santan dan gula aren selama berjam-jam." },
+            { region: "Jawa", name: "Jawa Timur", category: "Kesenian", q: "Kesenian topeng harimau berhias bulu merak megah dari Ponorogo adalah...", icon: "🦁", opts: ["Reog Ponorogo", "Tari Gandrung", "Tari Remo", "Kuda Lumping"], ans: 0, exp: "Reog Ponorogo menampilkan Singo Barong dengan topeng berat yang ikonik." },
+
+            // BALI & NUSA TENGGARA
+            { region: "Bali & Nusa", name: "Bali", category: "Tarian", q: "Tari tradisional Bali penyambutan tamu sambil menabur bunga adalah...", icon: "🌺", opts: ["Tari Pendet", "Tari Kecak", "Tari Legong", "Tari Barong"], ans: 0, exp: "Tari Pendet mencerminkan keindahan ucapan selamat datang khas Bali." },
+            { region: "Bali & Nusa", name: "Nusa Tenggara Barat", category: "Kuliner", q: "Olahan ayam berasa pedas gurih khas Lombok NTB dinamakan...", icon: "🍗", opts: ["Ayam Taliwang", "Ayam Betutu", "Rendang", "Coto"], ans: 0, exp: "Ayam Taliwang disajikan bersama sambal beberuk terong segar." },
+            { region: "Bali & Nusa", name: "Nusa Tenggara Timur", category: "Alat Musik", q: "Alat musik petik tradisional dari daun lontar khas pulau Rote NTT adalah...", icon: "🎼", opts: ["Sasando", "Kolintang", "Sampe", "Tifa"], ans: 0, exp: "Sasando menghasilkan alunan melodi indah yang khas dan menenangkan." },
+
+            // KALIMANTAN
+            { region: "Kalimantan", name: "Kalimantan Barat", category: "Pakaian Adat", q: "Pakaian adat pria Dayak Kalbar terbuat dari kulit kayu dinamakan...", icon: "🪶", opts: ["King Baba", "Ta'a", "Baju Bodo", "Ulee Balang"], ans: 0, exp: "King Baba dihiasi ornamen manik-manik dan bulu enggang." },
+            { region: "Kalimantan", name: "Kalimantan Tengah", category: "Tarian", q: "Tari perang tradisional suku Dayak di Kalimantan Tengah dinamakan...", icon: "🗡️", opts: ["Tari Mandau", "Tari Monong", "Tari Giring-Giring", "Tari Hudoq"], ans: 0, exp: "Tari Mandau memperlihatkan ketangkasan prajurit memainkan senjata." },
+            { region: "Kalimantan", name: "Kalimantan Selatan", category: "Kuliner", q: "Soto berkuah rempah khas Banjarmasin disajikan dengan perkedel dinamakan...", icon: "🍜", opts: ["Soto Banjar", "Soto Lamongan", "Soto Betawi", "Coto Makassar"], ans: 0, exp: "Soto Banjar memiliki aroma kayu manis dan cengkeh yang sangat harum." },
+            { region: "Kalimantan", name: "Kalimantan Timur", category: "Alat Musik", q: "Alat musik petik tradisional suku Dayak Kaltim dinamakan...", icon: "🎶", opts: ["Sampe", "Sasando", "Kolintang", "Tifa"], ans: 0, exp: "Sampe dimainkan untuk mengungkapkan perasaan suka maupun duka." },
+            { region: "Kalimantan", name: "Kalimantan Utara", category: "Pakaian Adat", q: "Pakaian adat wanita suku Dayak di Kalimantan Utara dinamakan...", icon: "👗", opts: ["Ta'a", "King Bibinge", "Baju Bodo", "Paksian"], ans: 0, exp: "Busana Ta'a sangat anggun dengan motif sulaman manik yang detail." },
+
+            // SULAWESI
+            { region: "Sulawesi", name: "Sulawesi Selatan", category: "Pakaian Adat", q: "Busana tradisional wanita Bugis berpotongan segi empat lengan pendek adalah...", icon: "👚", opts: ["Baju Bodo", "Baju Cele", "Baju Njemba", "Pattuqduq"], ans: 0, exp: "Baju Bodo diakui sebagai salah satu pakaian tertua di dunia." },
+            { region: "Sulawesi", name: "Sulawesi Utara", category: "Alat Musik", q: "Alat musik pukul bernada dari bilah kayu khas Minahasa dinamakan...", icon: "🎹", opts: ["Kolintang", "Tifa", "Angklung", "Sasando"], ans: 0, exp: "Kolintang dimainkan secara ansambel menghasilkan harmoni indah." },
+            { region: "Sulawesi", name: "Sulawesi Tengah", category: "Pakaian Adat", q: "Busana tradisional berbahan serat kulit kayu di Sulawesi Tengah adalah...", icon: "🧥", opts: ["Baju Fuya", "Baju Bodo", "King Baba", "Ulos"], ans: 0, exp: "Kain Fuya dibuat melalui proses penumbukan kulit kayu khusus." },
+            { region: "Sulawesi", name: "Sulawesi Tenggara", category: "Tarian", q: "Tarian pergaulan bergandengan tangan khas Kendari Sultra dinamakan...", icon: "🤝", opts: ["Tari Lulo", "Tari Pakarena", "Tari Maengket", "Tari Tor-Tor"], ans: 0, exp: "Tari Lulo melambangkan kebersamaan dan persahabatan erat." },
+            { region: "Sulawesi", name: "Sulawesi Barat", category: "Rumah Adat", q: "Rumah panggung tradisional khas masyarakat Mandar Sulbar dinamakan...", icon: "🏠", opts: ["Rumah Boyang", "Rumah Tongkonan", "Rumah Dulohupa", "Rumah Honai"], ans: 0, exp: "Rumah Boyang memiliki arsitektur unik menyerupai bentuk perahu." },
+            { region: "Sulawesi", name: "Gorontalo", category: "Pakaian Adat", q: "Penutup kepala adat kebanggaan pria Gorontalo dinamakan...", icon: "🧢", opts: ["Makuta", "Biliu", "Paksian", "Tanjak"], ans: 0, exp: "Makuta dikenakan bangsawan dalam upacara adat penobatan." },
+
+            // MALUKU
+            { region: "Maluku", name: "Maluku", category: "Alat Musik", q: "Alat musik pukul tradisional dari kayu dan kulit hewan di Maluku adalah...", icon: "🥁", opts: ["Tifa", "Kolintang", "Angklung", "Sasando"], ans: 0, exp: "Tifa menjadi pengiring utama tarian adat kepulauan Maluku." },
+            { region: "Maluku", name: "Maluku Utara", category: "Pakaian Adat", q: "Jas merah berenda emas kebesaran kesultanan di Maluku Utara dinamakan...", icon: "🥋", opts: ["Manteren Lamo", "Baju Cele", "Baju Njemba", "Ulos"], ans: 0, exp: "Manteren Lamo dikenakan oleh para sultan Ternate dan Tidore." },
+
+            // PAPUA
+            { region: "Papua", name: "Papua", category: "Makanan Khas", q: "Makanan pokok tradisional Papua dari olahan sari pati sagu adalah...", icon: "🥣", opts: ["Papeda", "Nasi Uduk", "Gudeg",
